@@ -17,13 +17,16 @@ public class Main {
         int M = Integer.parseInt(st.nextToken());
 
         st = new StringTokenizer(br.readLine());
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < M; i++) {
             int cur = Integer.parseInt(st.nextToken());
             if (map.containsKey(cur)) {
-                System.out.println(1);
+                sb.append(1);
             } else {
-                System.out.println(0);
+                sb.append(0);
             };
+            sb.append("\n");
         }
+        System.out.print(sb);
     }
 }
