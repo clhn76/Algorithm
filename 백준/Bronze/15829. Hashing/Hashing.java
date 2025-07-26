@@ -1,17 +1,22 @@
-import java.io.*;
-import java.util.*;
+import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        Scanner sc = new Scanner(System.in);
-        int N = sc.nextInt();
-        char[] chars = sc.next().toCharArray();
+    static final int n = 31;
+    static final int mod = 1234567891;
 
-        long sum = 0;
-        for (int i = 0; i < N; i++) {
-            sum += (chars[i] - 96) * Math.pow(31, i);
+    public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
+        int len = scan.nextInt();
+        String s = scan.next();
+
+        long pow = 1;
+        long answer = 0;
+
+        for(int i = 0; i < len; i++) {
+            answer += (s.charAt(i) - 'a' + 1) * pow;
+            pow = (pow * n) % mod;
         }
 
-        System.out.println(sum);
+        System.out.println(answer % mod);
     }
 }
