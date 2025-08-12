@@ -53,7 +53,6 @@ public class Solution {
     }
 
     static void simulate(char c) {
-        int nr, nc;
         switch (c) {
             case 'S':
                 shoot();
