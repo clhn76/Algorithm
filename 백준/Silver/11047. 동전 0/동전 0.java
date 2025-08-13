@@ -3,31 +3,24 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    static int N, K;
-    static int totalCnt = 0;
-    static int[] coins;
-
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        K = Integer.parseInt(st.nextToken());
-        coins = new int[N];
+        int N = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken());
+        int A[] = new int[N];
         for (int i = 0; i < N; i++) {
-            coins[i] = Integer.parseInt(br.readLine());
+            st = new StringTokenizer(br.readLine());
+            A[i] = Integer.parseInt(st.nextToken());
         }
-        // 큰 수 부터 탐색
-        while (K > 0) {
-            for (int i = N - 1; i >= 0; i--) {
-                int cnt = K / coins[i];
-                if (cnt > 0) {
-                    K -= coins[i] * cnt;
-                    totalCnt += cnt;
-                }
+
+        int cnt = 0;
+        for (int i = N - 1; i >= 0; i--) {
+            if (A[i] <= K) {
+                cnt += K / A[i];
+                K = K % A[i];
             }
         }
-
-        System.out.println(totalCnt);
+        System.out.println(cnt);
     }
-
 }
