@@ -41,7 +41,6 @@ public class Solution {
         Queue<int[]> queue = new ArrayDeque<>();
         queue.offer(new int[] { r, c, 0, 0 }); // r, c, block, cnt
         visited[r][c] = true;
-        // int minCnt = Integer.MAX_VALUE;
 
         while (!queue.isEmpty()) {
             int[] cur = queue.poll();
@@ -75,7 +74,6 @@ public class Solution {
         }
 
         return -1;
-        // return minCnt == Integer.MAX_VALUE ? -1 : minCnt;
     }
 
     private static boolean check(int r, int c) {
