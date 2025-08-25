@@ -1,127 +1,93 @@
-
 import java.io.*;
 import java.util.*;
 
 public class Main {
-
-    static class Fish {
-
-        int r, c, size;
-
-        public Fish(int r, int c, int size) {
-            this.r = r;
-            this.c = c;
-            this.size = size;
-        }
-
-    }
-
-    static int N, sharkSize;
+    static int N, sharkSize = 2, eaten = 0, time = 0;
     static int[][] map;
-    static List<Fish> fishes = new LinkedList<>();
-    static int[] dr = {-1, 1, 0, 0};
-    static int[] dc = {0, 0, -1, 1};
-
+    static int sharkX, sharkY;
+    static int[] dx = {-1, 0, 0, 1};
+    static int[] dy = {0, -1, 1, 0};
+    
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         N = Integer.parseInt(br.readLine());
-
-        int sharkR = 0;
-        int sharkC = 0;
-        sharkSize = 2;
-        int eatCnt = 0;
         map = new int[N][N];
+        
         for (int i = 0; i < N; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
             for (int j = 0; j < N; j++) {
-                int num = Integer.parseInt(st.nextToken());
-                if (num >= 1 && num <= 6) {
-                    fishes.add(new Fish(i, j, num));
-                    map[i][j] = num;
-                } else if (num == 9) {
-                    sharkR = i;
-                    sharkC = j;
+                map[i][j] = Integer.parseInt(st.nextToken());
+                if (map[i][j] == 9) {
+                    sharkX = i;
+                    sharkY = j;
                     map[i][j] = 0;
                 }
             }
         }
-
-        int moveCnt = 0;
+        
         while (true) {
-            // 가장 가까운 먹을 수 있는 물고기 있는지 확인
-            int fishDist = Integer.MAX_VALUE;
-            int fishIdx = -1;
-            for (int i = 0; i < fishes.size(); i++) {
-                Fish f = fishes.get(i);
-                if (fishes.get(i).size < sharkSize) {
-                    int dist = bfs(sharkR, sharkC, f.r, f.c);
-                    if (dist == -1) {
-                        continue;
-                    }
-                    if (dist < fishDist) {
-                        fishDist = dist;
-                        fishIdx = i;
-                    } else if (dist == fishDist && fishIdx > 0) {
-                        Fish prevF = fishes.get(fishIdx);
-                        if (f.r < prevF.r) {
-                            fishIdx = i;
-                        } else if (f.r == prevF.r && f.c < prevF.c) {
-                            fishIdx = i;
-                        }
-                    }
-                }
-            }
-
-            if (fishIdx < 0) {
-                break;
-            }
-
-            // 물고기 먹기
-            Fish targetFish = fishes.get(fishIdx);
-            moveCnt += fishDist;
-            sharkR = targetFish.r;
-            sharkC = targetFish.c;
-            map[targetFish.r][targetFish.c] = 0;
-
-            fishes.remove(fishIdx);
-
-            eatCnt++;
-            if (eatCnt >= sharkSize) {
+            Fish target = findFish();
+            if (target == null) break;
+            
+            time += target.dist;
+            sharkX = target.x;
+            sharkY = target.y;
+            map[sharkX][sharkY] = 0;
+            
+            if (++eaten == sharkSize) {
                 sharkSize++;
-                eatCnt = 0;
+                eaten = 0;
             }
         }
-
-        System.out.println(moveCnt);
+        
+        System.out.println(time);
     }
-
-    private static int bfs(int sharkR, int sharkC, int fishR, int fishC) {
+    
+    static Fish findFish() {
+        PriorityQueue<Fish> pq = new PriorityQueue<>();
         boolean[][] visited = new boolean[N][N];
-        Queue<int[]> q = new ArrayDeque<>();
-        q.offer(new int[]{sharkR, sharkC, 0});
-        visited[sharkR][sharkC] = true;
-
+        Queue<int[]> q = new LinkedList<>();
+        
+        q.offer(new int[]{sharkX, sharkY, 0});
+        visited[sharkX][sharkY] = true;
+        
         while (!q.isEmpty()) {
             int[] cur = q.poll();
-
-            if (cur[0] == fishR && cur[1] == fishC) {
-                return cur[2];
-            }
-
-            for (int d = 0; d < 4; d++) {
-                int nr = cur[0] + dr[d];
-                int nc = cur[1] + dc[d];
-                if (check(nr, nc) && !visited[nr][nc] && map[nr][nc] <= sharkSize) {
-                    visited[nr][nc] = true;
-                    q.offer(new int[]{nr, nc, cur[2] + 1});
+            int x = cur[0], y = cur[1], dist = cur[2];
+            
+            for (int i = 0; i < 4; i++) {
+                int nx = x + dx[i];
+                int ny = y + dy[i];
+                
+                if (nx < 0 || nx >= N || ny < 0 || ny >= N) continue;
+                if (visited[nx][ny] || map[nx][ny] > sharkSize) continue;
+                
+                visited[nx][ny] = true;
+                
+                if (map[nx][ny] > 0 && map[nx][ny] < sharkSize) {
+                    pq.offer(new Fish(nx, ny, dist + 1));
                 }
+                q.offer(new int[]{nx, ny, dist + 1});
             }
         }
-
-        return -1;
+        
+        return pq.isEmpty() ? null : pq.poll();
     }
-
-    private static boolean check(int r, int c) {
-        return r >= 0 && r < N && c >= 0 && c < N;
+    
+    static class Fish implements Comparable<Fish> {
+        int x, y, dist;
+        
+        Fish(int x, int y, int dist) {
+            this.x = x;
+            this.y = y;
+            this.dist = dist;
+        }
+        
+        @Override
+        public int compareTo(Fish o) {
+            if (dist != o.dist) return dist - o.dist;
+            if (x != o.x) return x - o.x;
+            return y - o.y;
+        }
     }
 }
