@@ -1,60 +1,54 @@
 import java.io.*;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
-    static int N, totalOneCnt, totalZeroCnt;
-    static int[][] map;
+	static int N, white, blue;
+	static int[][] paper;
 
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        N = Integer.parseInt(br.readLine());
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		N = Integer.parseInt(st.nextToken());
 
-        map = new int[N][N];
-        for (int i = 0; i < N; i++) {
-            StringTokenizer st = new StringTokenizer(br.readLine());
-            for (int j = 0; j < N; j++) {
-                map[i][j] = Integer.parseInt(st.nextToken());
-            }
-        }
-        
-        dfs(0, N, 0, N);
-        
-        System.out.println(totalZeroCnt);
-        System.out.println(totalOneCnt);
-    }
+		paper = new int[N][N];
+		for (int i = 0; i < N; i++) {
+			st = new StringTokenizer(br.readLine());
+			for (int j = 0; j < N; j++) {
+				paper[i][j] = Integer.parseInt(st.nextToken());
+			}
+		}
 
-    private static void dfs(int rs, int re, int cs, int ce) {
-        int oneCnt = 0;
-        int zeroCnt = 0;        
-        int goal = (re - rs) * (ce - cs);
-        
-        // 현재 영역의 색상 개수 세기
-        for (int i = rs; i < re; i++) {
-            for (int j = cs; j < ce; j++) {
-                if (map[i][j] == 1) {
-                    oneCnt++;
-                } else {
-                    zeroCnt++;
-                }
-            }
-        }
-        
-        // 모두 같은 색이면 카운트 증가하고 종료
-        if (oneCnt == goal) {
-            totalOneCnt++;
-            return; // 재귀 종료
-        } else if (zeroCnt == goal) {
-            totalZeroCnt++;
-            return; // 재귀 종료
-        }
-        
-        // 다른 색이 섞여있으면 4등분하여 재귀 호출
-        int midR = (rs + re) / 2;
-        int midC = (cs + ce) / 2;
-        
-        dfs(rs, midR, cs, midC);      // 좌상단
-        dfs(rs, midR, midC, ce);      // 우상단  
-        dfs(midR, re, cs, midC);      // 좌하단
-        dfs(midR, re, midC, ce);      // 우하단
-    }
+		dfs(0, 0, N);
+
+		System.out.println(blue);
+		System.out.println(white);
+	}
+
+	private static void dfs(int r, int c, int size) {
+		if (isSame(r, c, size)) {
+			if (paper[r][c] == 1) {
+				white++;
+			} else {
+				blue++;
+			}
+			return;
+		}
+
+		int half = size / 2;
+		dfs(r, c, half);
+		dfs(r, c + half, half);
+		dfs(r + half, c, half);
+		dfs(r + half, c + half, half);
+	}
+
+	private static boolean isSame(int r, int c, int size) {
+		int color = paper[r][c];
+		for (int i = r; i < r + size; i++) {
+			for (int j = c; j < c + size; j++) {
+				if (paper[i][j] != color)
+					return false;
+			}
+		}
+		return true;
+	}
 }
