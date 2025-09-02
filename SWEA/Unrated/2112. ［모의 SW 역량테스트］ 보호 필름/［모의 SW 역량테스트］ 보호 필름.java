@@ -49,19 +49,17 @@ public class Solution {
         // 현재 행 약물 처리 안함
         dfs(row + 1, cnt);
 
-        // 현재 행 약물 처리 (0 또는 1)
-        int[] backup = new int[W];
-        System.arraycopy(film[row], 0, backup, 0, W);
-
         // 0으로 처리
+        int[] backup = film[row].clone();
         Arrays.fill(film[row], 0);
         dfs(row + 1, cnt + 1);
-        System.arraycopy(backup, 0, film[row], 0, W);
+        film[row] = backup;
 
         // 1으로 처리
+        backup = film[row].clone();
         Arrays.fill(film[row], 1);
         dfs(row + 1, cnt + 1);
-        System.arraycopy(backup, 0, film[row], 0, W);
+        film[row] = backup;
     }
 
     private static boolean checkPass() {
